@@ -11,8 +11,10 @@ import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import java.awt.*;
 import java.time.Duration;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class ConsultaCepServiceImpl {
@@ -23,7 +25,6 @@ public class ConsultaCepServiceImpl {
 
     public Uni<EnderecoWrapper> consultarPorCep(final String cep) {
 
-        //UniOnCancel<EnderecoWrapper> cancel = Uni.createFrom().item(service.consultarPorCep(cep)).onCancellation();
         return Uni
                 .createFrom()
                 .item(service.consultarPorCep(cep))
@@ -38,10 +39,15 @@ public class ConsultaCepServiceImpl {
                                                                        final String bairro,
                                                                        final String logradouro) {
 
-        return Multi
+        return   Multi
                 .createFrom()
-                .items(service.consultarPorUFCidadeLogradouro(uf, bairro, logradouro));
-
+                .items(service.consultarPorUFCidadeLogradouro(uf, bairro, logradouro)
+                        .stream()
+                        .filter(enderecoWrapper -> enderecoWrapper.getUf().length() == 2)
+                        .filter(enderecoWrapper -> enderecoWrapper.getBairro().length() >= 3)
+                        .filter(enderecoWrapper -> enderecoWrapper.getLogradouro().length() >= 3)
+                        .collect(Collectors.toUnmodifiableList()))
+                .log();
     }
 }
 

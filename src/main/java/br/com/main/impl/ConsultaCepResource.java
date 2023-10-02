@@ -26,13 +26,13 @@ public class ConsultaCepResource {
     }
 
     @Blocking
-    @Path("/{uf}/{bairro}/{logradouro}")
+    @Path("/{uf}/{cidade}/{logradouro}")
     @GET
     public Multi<List<EnderecoWrapper>> consultarPorUFCidadeLogradouro(@PathParam("uf")String uf,
-                                                                       @PathParam("bairro")String bairro,
+                                                                       @PathParam("cidade")String cidade,
                                                                        @PathParam("logradouro")String logradouro){
 
-        return service.consultarPorUFCidadeLogradouro(uf,bairro,logradouro);
+        return service.consultarPorUFCidadeLogradouro(uf, cidade, logradouro);
     }
 
 
