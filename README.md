@@ -8,21 +8,21 @@ If you want to learn more about Quarkus, please visit its website: https://quark
 
 You can run your application in dev mode that enables live coding using:
 ```shell script
-./mvnw compile quarkus:dev
+ ./mvnw compile -DskipTests quarkus:dev
 ```
 
 # Consulta-Cep :point_left:
 
 You can run your application in browser web or command line curl.
 
-http://localhost:8080/q/cep-ui/
+http://localhost:8080/cep-ui
 
 # System Requirements :computer:
 -------------------
 
 All you need to build this project is Java 11.0 or better, Maven 3.1 or better, dependency: cdi, rest-client, rest-client-mutiny, rest-client-reactive, rest-client-reactive-jsonb, resteasy-reactive, resteasy-reactive-jsonb, servlet, smallrye-context-propagation, smallrye-openapi, swagger-ui, vertx.
 
-Documentation :open_book:
+# Documentation :open_book:
 
 -------------------
 
