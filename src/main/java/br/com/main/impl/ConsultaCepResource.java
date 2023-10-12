@@ -2,6 +2,7 @@ package br.com.main.impl;
 
 import br.com.main.bean.EnderecoWrapper;
 import io.smallrye.common.annotation.Blocking;
+import io.smallrye.common.annotation.NonBlocking;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
@@ -25,6 +26,7 @@ public class ConsultaCepResource {
         return  service.consultarPorCep(cep);
     }
 
+    //@NonBlocking
     @Blocking
     @Path("/{uf}/{cidade}/{logradouro}")
     @GET
