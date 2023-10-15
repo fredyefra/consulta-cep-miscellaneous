@@ -20,38 +20,19 @@ public class ConsultaCepResource {
     ConsultaCepServiceImpl service;
 
     @Blocking
-    @Path("/{cep}")
     @GET
-    public Uni<EnderecoWrapper> consultarPorCep (@PathParam("cep") String cep){
-        return  service.consultarPorCep(cep);
+    @Path("/{cep}")
+    public Uni<EnderecoWrapper> consultarPorCep(@PathParam("cep") String cep) {
+        return service.consultarPorCep(cep);
     }
 
-    //@NonBlocking
     @Blocking
-    @Path("/{uf}/{cidade}/{logradouro}")
     @GET
-    public Multi<List<EnderecoWrapper>> consultarPorUFCidadeLogradouro(@PathParam("uf")String uf,
-                                                                       @PathParam("cidade")String cidade,
-                                                                       @PathParam("logradouro")String logradouro){
+    @Path("/{uf}/{cidade}/{logradouro}")
+    public Multi<List<EnderecoWrapper>> consultarPorUFCidadeLogradouro(@PathParam("uf") String uf,
+                                                                       @PathParam("cidade") String cidade,
+                                                                       @PathParam("logradouro") String logradouro) {
 
         return service.consultarPorUFCidadeLogradouro(uf, cidade, logradouro);
     }
-
-
-
-//    @Path("/{cep}")
-//    @Blocking
-//    @GET
-//    public Uni<Response> consultarPorCep (@PathParam("cep") String cep){
-//
-//        return  service.consultarPorCep(cep).map(enderecoWrapper -> {
-//
-//            if (enderecoWrapper != null){
-//                return Response.status(Response.Status.OK).entity(enderecoWrapper).build();
-//            }
-//            return null;
-//        }).onItem()
-//          .ifNull()
-//          .continueWith(status(Response.Status.NOT_FOUND).build());
-//    }
 }

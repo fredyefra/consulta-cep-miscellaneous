@@ -1,6 +1,7 @@
 package br.com.main.exception;
 
 import br.com.main.message.MessageError;
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
@@ -13,6 +14,7 @@ public class NegocioExceptionMapper implements ExceptionMapper<WebApplicationExc
 //public class NegocioExceptionMapper implements ExceptionMapper<ClientWebApplicationException> {
     @Override
     @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response toResponse(WebApplicationException exception) {
 
         MessageError message = new MessageError();
