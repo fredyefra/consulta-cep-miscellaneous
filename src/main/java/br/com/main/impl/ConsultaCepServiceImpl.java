@@ -4,7 +4,6 @@ package br.com.main.impl;
 import br.com.main.bean.EnderecoWrapper;
 import br.com.main.rest.ConsultaCepService;
 import io.quarkus.logging.Log;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -34,12 +33,13 @@ public class ConsultaCepServiceImpl {
     }
 
     //posicao na lista de ceps
-    private void imprimir(List<EnderecoWrapper> enderecoWrapperList){
+    private List imprimir(List<EnderecoWrapper> enderecoWrapperList){
 
          IntStream.range(0, enderecoWrapperList.size())
                 .mapToObj(endereco -> endereco + " ==> " + enderecoWrapperList.get(endereco))
                 .collect(Collectors.toList())
                 .forEach(System.out::println);
+    return enderecoWrapperList;
     }
 
     public Uni<EnderecoWrapper> consultarPorCep(final String cep) {
@@ -53,11 +53,11 @@ public class ConsultaCepServiceImpl {
                 .onTermination().invoke(() -> Log.log(Logger.Level.INFO,"Requisição Entregue!"));
     }
 
-    public Multi<List<EnderecoWrapper>> consultarPorUFCidadeLogradouro(final String uf,
+    public Uni<List<EnderecoWrapper>> consultarPorUFCidadeLogradouro(final String uf,
                                                                        final String bairro,
                                                                        final String logradouro) {
 
-        return   Multi
+        return   Uni
                 .createFrom()
                 .item(service.consultarPorUFCidadeLogradouro(uf, bairro, logradouro)
                         .stream()

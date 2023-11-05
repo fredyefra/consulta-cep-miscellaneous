@@ -1,6 +1,7 @@
 package br.com.main.bean;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public record EnderecoWrapper(String cep,
                               String logradouro,
@@ -8,4 +9,7 @@ public record EnderecoWrapper(String cep,
                               String bairro,
                               String localidade,
                               String uf,
-                              String ddd) implements Serializable { }
+                              String ddd) implements Serializable {
+
+
+}

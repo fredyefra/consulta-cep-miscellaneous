@@ -9,6 +9,9 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Provider
 public class NegocioExceptionMapper implements ExceptionMapper<WebApplicationException> {
 //public class NegocioExceptionMapper implements ExceptionMapper<ClientWebApplicationException> {
@@ -22,14 +25,11 @@ public class NegocioExceptionMapper implements ExceptionMapper<WebApplicationExc
         message.setCode(exception.getResponse().getStatus());
 
       switch (exception.getResponse().getStatus()){
-            case 400: return Response.status(Response.Status.BAD_REQUEST).entity(" DEU ZICA AQUI ---> :  1   " + (message.getMessage()) + message.getCode()).build();
-            case 404: return Response.status(Response.Status.NOT_FOUND).entity("   DEU ZICA AQUI ---> :  2   " + (message.getMessage()) + message.getCode()).build();
+            case 400: return Response.status(Response.Status.BAD_REQUEST).entity("    DEU ZICA AQUI ---> :  1   " + (message.getMessage()) + message.getCode()).build();
+            case 401: return Response.status(Response.Status.UNAUTHORIZED).entity("   IMPLEMENTAR ---> :  2   " + (message.getMessage()) + message.getCode()).build();
+            case 403: return Response.status(Response.Status.FORBIDDEN).entity("      IMPLEMENTAR ---> :  3   " + (message.getMessage()) + message.getCode()).build();
+            case 404: return Response.status(Response.Status.NOT_FOUND).entity("      DEU ZICA AQUI ---> :  4   " + (message.getMessage()) + message.getCode()).build();
             default:  return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("PROCURE O SUPORTE !!!!!" ).build();
         }
     }
-
-//    @ServerExceptionMapper
-//    public RestResponse<String> map(IllegalArgumentException exception){
-//        return RestResponse.status(Response.Status.CONFLICT, "Argumento Ilegal");
-//    }
 }
