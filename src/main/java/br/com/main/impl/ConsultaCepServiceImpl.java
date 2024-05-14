@@ -14,6 +14,8 @@ import org.jboss.logging.Logger;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -24,7 +26,47 @@ public class ConsultaCepServiceImpl {
     @RestClient
     private ConsultaCepService service;
 
-    private void atraso(List<EnderecoWrapper> enderecoWrapperList) {
+    public Uni<EnderecoWrapper> consultarPorCep(final String cep) {
+
+        Uni<EnderecoWrapper> endereco = Uni
+
+                .createFrom().completionStage(
+                        CompletableFuture.supplyAsync(() -> service.consultarPorCep(cep))
+                )
+                .onItem().ifNull().failWith(NotFoundException::new)
+                .ifNoItem().after(Duration.ofSeconds(30))
+                .failWith(BadRequestException::new)
+                .onItem().delayIt().by(Duration.ofMillis(1500))
+                .onCancellation().invoke(() -> Log.log(Logger.Level.WARN, "Requisição Cancelada!"))
+                .onTermination().invoke(() -> Log.log(Logger.Level.INFO, "Requisição Entregue!"));
+
+
+        return endereco;
+    }
+
+    public Uni<List<EnderecoWrapper>> consultarPorUFCidadeLogradouro(final String uf, final String bairro, final String logradouro) throws ExecutionException, InterruptedException {
+
+        Uni<List<EnderecoWrapper>> enderecos = Uni
+                .createFrom()
+                .item(
+                        CompletableFuture.supplyAsync(() -> service.consultarPorUFCidadeLogradouro(uf, bairro, logradouro))
+                        .get()
+                        .stream()
+                        .filter(enderecoWrapper -> enderecoWrapper.uf().length() == 2)
+                        .filter(enderecoWrapper -> enderecoWrapper.bairro().length() >= 3)
+                        .filter(enderecoWrapper -> enderecoWrapper.logradouro().length() >= 3)
+                        .collect(Collectors.toList())
+                )
+                .onItem().invoke(this::imprimir)
+                .onItem().invoke(this::atraso)
+                .onCancellation().invoke(() -> Log.log(Logger.Level.WARN, "Requisição Cancelada!"))
+                .onTermination().invoke(() -> Log.log(Logger.Level.INFO, "Requisição Entregue!"));
+
+    return enderecos;
+
+    }
+
+    private void atraso(List<EnderecoWrapper> enderecos) {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
@@ -32,42 +74,13 @@ public class ConsultaCepServiceImpl {
         }
     }
 
-    //posicao na lista de ceps
-    private List imprimir(List<EnderecoWrapper> enderecoWrapperList){
+    private List imprimir(List<EnderecoWrapper> enderecos) {
 
-         IntStream.range(0, enderecoWrapperList.size())
-                .mapToObj(endereco -> endereco + " ==> " + enderecoWrapperList.get(endereco))
+        IntStream.range(0, enderecos.size())
+                .mapToObj(endereco -> endereco + " ==> " + enderecos.get(endereco))
                 .collect(Collectors.toList())
                 .forEach(System.out::println);
-    return enderecoWrapperList;
+        return enderecos;
     }
 
-    public Uni<EnderecoWrapper> consultarPorCep(final String cep) {
-
-        return Uni
-                .createFrom()
-                .item(service.consultarPorCep(cep))
-                .onItem().ifNull().failWith(NotFoundException::new)
-                .ifNoItem().after(Duration.ofSeconds(30))
-                .failWith(BadRequestException::new)
-                .onTermination().invoke(() -> Log.log(Logger.Level.INFO,"Requisição Entregue!"));
-    }
-
-    public Uni<List<EnderecoWrapper>> consultarPorUFCidadeLogradouro(final String uf,
-                                                                       final String bairro,
-                                                                       final String logradouro) {
-
-        return   Uni
-                .createFrom()
-                .item(service.consultarPorUFCidadeLogradouro(uf, bairro, logradouro)
-                        .stream()
-                        .filter(enderecoWrapper -> enderecoWrapper.uf().length() == 2)
-                        .filter(enderecoWrapper -> enderecoWrapper.bairro().length() >= 3)
-                        .filter(enderecoWrapper -> enderecoWrapper.logradouro().length() >= 3)
-                        .collect(Collectors.toList()))
-                //.onItem().invoke(e-> e.forEach(System.out::println))
-                .onItem().invoke(this::imprimir)
-                .onItem().invoke(this::atraso)
-                .onTermination().invoke(() -> Log.log(Logger.Level.INFO,"Requisição Entregue!"));
-    }
 }

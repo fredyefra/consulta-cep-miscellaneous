@@ -11,6 +11,9 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 
 @Path("/cep")
 @Produces(MediaType.APPLICATION_JSON)
@@ -31,10 +34,8 @@ public class ConsultaCepResource {
     @GET
     @Path("/{uf}/{cidade}/{logradouro}")
     public Uni<List<EnderecoWrapper>> consultarPorUFCidadeLogradouro(@PathParam("uf") String uf,
-                                                                       @PathParam("cidade") String cidade,
-                                                                       @PathParam("logradouro") String logradouro) {
-
+                                                                     @PathParam("cidade") String cidade,
+                                                                     @PathParam("logradouro") String logradouro) throws ExecutionException, InterruptedException {
         return service.consultarPorUFCidadeLogradouro(uf, cidade, logradouro);
     }
-
 }

@@ -2,13 +2,13 @@ package br.com.main.rest;
 
 import br.com.main.bean.EnderecoWrapper;
 import br.com.main.exception.NegocioExceptionMapper;
+import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import java.util.List;
-import java.util.Map;
 
 @RegisterProvider(NegocioExceptionMapper.class)
 @Path(value = "/ws")
@@ -23,8 +23,9 @@ public interface ConsultaCepService {
 
     @GET
     @Path("/{uf}/{bairro}/{logradouro}/json/")
-    List <EnderecoWrapper> consultarPorUFCidadeLogradouro(
-            @PathParam("uf") String uf,
-            @PathParam("bairro") String bairro,
-            @PathParam("logradouro") String logradouro);
+    List<EnderecoWrapper> consultarPorUFCidadeLogradouro(
+            @PathParam("uf") final String uf,
+            @PathParam("bairro") final String bairro,
+            @PathParam("logradouro") final String logradouro);
+
 }
