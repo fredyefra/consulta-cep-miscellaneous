@@ -1,18 +1,13 @@
 package br.com.main.impl;
 
 import br.com.main.bean.EnderecoWrapper;
-import io.quarkus.logging.Log;
-import io.quarkus.runtime.util.StringUtil;
 import io.smallrye.common.annotation.Blocking;
-import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.Uni;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
 
 @Path("/cep")
@@ -33,9 +28,9 @@ public class ConsultaCepResource {
     @Blocking
     @GET
     @Path("/{uf}/{cidade}/{logradouro}")
-    public Uni<List<EnderecoWrapper>> consultarPorUFCidadeLogradouro(@PathParam("uf") String uf,
-                                                                     @PathParam("cidade") String cidade,
-                                                                     @PathParam("logradouro") String logradouro) throws ExecutionException, InterruptedException {
+    public Uni<List<EnderecoWrapper>>  consultarPorUFCidadeLogradouro(@PathParam("uf") String uf,
+                                                                         @PathParam("cidade") String cidade,
+                                                                         @PathParam("logradouro") String logradouro) throws ExecutionException, InterruptedException {
         return service.consultarPorUFCidadeLogradouro(uf, cidade, logradouro);
     }
 }

@@ -3,6 +3,7 @@ package br.com.main.impl;
 
 import br.com.main.bean.EnderecoWrapper;
 import br.com.main.rest.ConsultaCepService;
+import br.com.main.utils.DelayUtils;
 import io.quarkus.logging.Log;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -14,6 +15,7 @@ import org.jboss.logging.Logger;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -26,22 +28,27 @@ public class ConsultaCepServiceImpl {
     @RestClient
     private ConsultaCepService service;
 
+    @Inject
+    private DelayUtils delayUtils;
+
+    @Inject
+    Logger logger;
+
     public Uni<EnderecoWrapper> consultarPorCep(final String cep) {
 
-        Uni<EnderecoWrapper> endereco = Uni
-
-                .createFrom().completionStage(
-                        CompletableFuture.supplyAsync(() -> service.consultarPorCep(cep))
+        return Uni.createFrom().completionStage(
+                        //CompletableFuture.completedStage(service.consultarPorCep(cep))
+                        CompletableFuture.supplyAsync(()->service.consultarPorCep(cep))
                 )
+                //return service.consultarPorCep(cep)
+                //.onItem().invoke(endereco -> delayUtils.atraso2(endereco))
                 .onItem().ifNull().failWith(NotFoundException::new)
                 .ifNoItem().after(Duration.ofSeconds(30))
                 .failWith(BadRequestException::new)
-                .onItem().delayIt().by(Duration.ofMillis(1500))
-                .onCancellation().invoke(() -> Log.log(Logger.Level.WARN, "Requisição Cancelada!"))
-                .onTermination().invoke(() -> Log.log(Logger.Level.INFO, "Requisição Entregue!"));
-
-
-        return endereco;
+                .onItem().delayIt().by(Duration.ofMillis(1000))
+                .onFailure().invoke(() -> Log.log(Logger.Level.ERROR, "Requisição Falhou!"))
+                .onTermination().invoke(() -> Log.log(Logger.Level.INFO, "Requisição Entregue!"))
+                .log();
     }
 
     public Uni<List<EnderecoWrapper>> consultarPorUFCidadeLogradouro(final String uf, final String bairro, final String logradouro) throws ExecutionException, InterruptedException {
@@ -49,29 +56,22 @@ public class ConsultaCepServiceImpl {
         Uni<List<EnderecoWrapper>> enderecos = Uni
                 .createFrom()
                 .item(
+                        //CompletableFuture.supplyAsync(() -> service.consultarPorUFCidadeLogradouro(uf, bairro, logradouro))
                         CompletableFuture.supplyAsync(() -> service.consultarPorUFCidadeLogradouro(uf, bairro, logradouro))
-                        .get()
-                        .stream()
-                        .filter(enderecoWrapper -> enderecoWrapper.uf().length() == 2)
-                        .filter(enderecoWrapper -> enderecoWrapper.bairro().length() >= 3)
-                        .filter(enderecoWrapper -> enderecoWrapper.logradouro().length() >= 3)
-                        .collect(Collectors.toList())
+                                .get()
+                                .stream()
+                                .filter(enderecoWrapper -> enderecoWrapper.uf().length() == 2)
+                                .filter(enderecoWrapper -> enderecoWrapper.bairro().length() >= 3)
+                                .filter(enderecoWrapper -> enderecoWrapper.logradouro().length() >= 3)
+                                .collect(Collectors.toList())
                 )
+                //.onItem().invoke(endereco -> delayUtils.atraso(endereco))
                 .onItem().invoke(this::imprimir)
-                .onItem().invoke(this::atraso)
-                .onCancellation().invoke(() -> Log.log(Logger.Level.WARN, "Requisição Cancelada!"))
+                .onFailure().invoke(() -> Log.log(Logger.Level.ERROR, "Requisição Falhou!"))
                 .onTermination().invoke(() -> Log.log(Logger.Level.INFO, "Requisição Entregue!"));
 
-    return enderecos;
+        return enderecos;
 
-    }
-
-    private void atraso(List<EnderecoWrapper> enderecos) {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private List imprimir(List<EnderecoWrapper> enderecos) {
