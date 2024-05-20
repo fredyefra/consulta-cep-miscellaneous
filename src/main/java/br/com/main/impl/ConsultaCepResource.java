@@ -22,6 +22,7 @@ public class ConsultaCepResource {
     @GET
     @Path("/{cep}")
     public Uni<EnderecoWrapper> consultarPorCep(@PathParam("cep") String cep) {
+
         return service.consultarPorCep(cep);
     }
 

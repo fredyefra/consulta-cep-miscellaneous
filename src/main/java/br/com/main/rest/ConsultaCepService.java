@@ -2,7 +2,8 @@ package br.com.main.rest;
 
 import br.com.main.bean.EnderecoWrapper;
 import br.com.main.exception.NegocioExceptionMapper;
-import io.smallrye.mutiny.Multi;
+import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.helpers.spies.UniGlobalSpy;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import org.eclipse.microprofile.rest.client.annotation.RegisterProvider;
@@ -31,10 +32,10 @@ public interface ConsultaCepService {
 
     @GET
     @Path("/{cep}/json/")
-    CompletableFuture<EnderecoWrapper> consultarPorCepv2(@PathParam("cep") final String cep);
+    CompletableFuture<EnderecoWrapper> consultarPorUFCidadeLogradourov2(@PathParam("cep") final String cep);
 
     @GET
     @Path("/{cep}/json/")
-    CompletableFuture<EnderecoWrapper> consultarPorUFCidadeLogradouro2(@PathParam("cep") final String cep);
+    UniGlobalSpy<EnderecoWrapper> requestSpy(Uni<EnderecoWrapper> cep);
 
 }

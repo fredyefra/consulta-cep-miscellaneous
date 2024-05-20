@@ -15,9 +15,9 @@ import org.jboss.logging.Logger;
 
 import java.time.Duration;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -38,7 +38,12 @@ public class ConsultaCepServiceImpl {
 
         return Uni.createFrom().completionStage(
                         //CompletableFuture.completedStage(service.consultarPorCep(cep))
-                        CompletableFuture.supplyAsync(()->service.consultarPorCep(cep))
+                        CompletableFuture.supplyAsync(() -> service.consultarPorCep(cep), new Executor() {
+                            @Override
+                            public void execute(Runnable command) {
+                                new Thread(command).start();
+                            }
+                        })
                 )
                 //return service.consultarPorCep(cep)
                 //.onItem().invoke(endereco -> delayUtils.atraso2(endereco))
