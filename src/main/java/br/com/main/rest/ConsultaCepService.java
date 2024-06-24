@@ -21,7 +21,7 @@ public interface ConsultaCepService {
 
     @GET
     @Path("/{cep}/json/")
-    EnderecoWrapper consultarPorCep(@PathParam("cep") final String cep);
+    <T extends EnderecoWrapper> EnderecoWrapper consultarPorCep(@PathParam("cep") final String cep);
 
     @GET
     @Path("/{uf}/{bairro}/{logradouro}/json/")

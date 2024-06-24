@@ -21,7 +21,7 @@ public class ConsultaCepResource {
     @Blocking
     @GET
     @Path("/{cep}")
-    public Uni<EnderecoWrapper> consultarPorCep(@PathParam("cep") String cep) {
+    public Uni<EnderecoWrapper> consultarPorCep(@PathParam("cep")  String cep) {
 
         return service.consultarPorCep(cep);
     }

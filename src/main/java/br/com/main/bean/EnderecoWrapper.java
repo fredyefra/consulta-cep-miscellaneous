@@ -1,7 +1,6 @@
 package br.com.main.bean;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 public record EnderecoWrapper(String cep,
                               String logradouro,

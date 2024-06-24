@@ -38,7 +38,7 @@ public class ConsultaCepServiceImpl {
 
         return Uni.createFrom().completionStage(
                         //CompletableFuture.completedStage(service.consultarPorCep(cep))
-                        CompletableFuture.supplyAsync(() -> service.consultarPorCep(cep), new Executor() {
+                        CompletableFuture.supplyAsync(() -> service.<EnderecoWrapper>consultarPorCep(cep), new Executor() {
                             @Override
                             public void execute(Runnable command) {
                                 new Thread(command).start();
@@ -87,5 +87,4 @@ public class ConsultaCepServiceImpl {
                 .forEach(System.out::println);
         return enderecos;
     }
-
 }
