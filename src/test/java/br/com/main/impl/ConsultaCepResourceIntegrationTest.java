@@ -1,27 +1,31 @@
-package br.com.main.rest;
+package br.com.main.impl;
 
 
+import io.quarkus.test.common.http.TestHTTPResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.RestAssured;
-import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.Test;
+
+import java.net.URL;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 
 
-
 @QuarkusTest
-public class ConsultaCepServiceTest {
+public class ConsultaCepResourceIntegrationTest {
+
+    @TestHTTPResource
+    URL cepEndpoint;
 
     @Test
-    public void testDevolverEndpointEnderecoPorCep() {
+    public void testDevolveEndpointEnderecoPorCep() {
 
         //RestAssured.baseURI = "http://localhost:8080/cep";
 
         final String cep = "70390-055";
 
-        ValidatableResponse body = RestAssured.given()
+        RestAssured.given()
                 .pathParam("cep", cep)
                 .when().get("/cep/{cep}")
                 .then()
@@ -32,8 +36,9 @@ public class ConsultaCepServiceTest {
                 .body("localidade", equalTo("Brasília"));
 
     }
+
     @Test
-    public void testDevolverEndpointEnderecoPorUfCidadeLogradouro() {
+    public void testDevolveEndpointEnderecoPorUfCidadeLogradouro() {
 
         final String uf = "DF";
         final String cidade = "Brasília";
@@ -51,7 +56,7 @@ public class ConsultaCepServiceTest {
     }
 
     @Test
-    public void testDevolverEndpointNaoLocalizado() {
+    public void testDevolveEndpointNaoLocalizado() {
 
         final String cep = "70390-055";
 

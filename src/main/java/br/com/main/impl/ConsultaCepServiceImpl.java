@@ -46,12 +46,10 @@ public class ConsultaCepServiceImpl {
                         })
                 )
                 //return service.consultarPorCep(cep)
-                //.onItem().invoke(endereco -> delayUtils.atraso2(endereco))
                 .onItem().ifNull().failWith(NotFoundException::new)
                 .ifNoItem().after(Duration.ofSeconds(30))
                 .failWith(BadRequestException::new)
-                .onItem().delayIt().by(Duration.ofMillis(1000))
-                .onFailure().invoke(() -> Log.log(Logger.Level.ERROR, "Requisição Falhou!"))
+                .onFailure().invoke(falha-> Log.log(Logger.Level.ERROR, "Requisição Falhou!" + falha))
                 .onTermination().invoke(() -> Log.log(Logger.Level.INFO, "Requisição Entregue!"))
                 .log();
     }
@@ -61,7 +59,7 @@ public class ConsultaCepServiceImpl {
         Uni<List<EnderecoWrapper>> enderecos = Uni
                 .createFrom()
                 .item(
-                        //CompletableFuture.supplyAsync(() -> service.consultarPorUFCidadeLogradouro(uf, bairro, logradouro))
+
                         CompletableFuture.supplyAsync(() -> service.consultarPorUFCidadeLogradouro(uf, bairro, logradouro))
                                 .get()
                                 .stream()
@@ -70,7 +68,6 @@ public class ConsultaCepServiceImpl {
                                 .filter(enderecoWrapper -> enderecoWrapper.logradouro().length() >= 3)
                                 .collect(Collectors.toList())
                 )
-                //.onItem().invoke(endereco -> delayUtils.atraso(endereco))
                 .onItem().invoke(this::imprimir)
                 .onFailure().invoke(() -> Log.log(Logger.Level.ERROR, "Requisição Falhou!"))
                 .onTermination().invoke(() -> Log.log(Logger.Level.INFO, "Requisição Entregue!"));
