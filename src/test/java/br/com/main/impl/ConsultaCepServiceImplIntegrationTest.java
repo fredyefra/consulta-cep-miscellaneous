@@ -24,13 +24,28 @@ public class ConsultaCepServiceImplIntegrationTest {
     @Test
     public void testDevolveEnderecoCompletoPeloCep() {
 
-        EnderecoWrapper endereco = endereco();
+        EnderecoWrapper expectativa = endereco();
 
-        UniAssertSubscriber<EnderecoWrapper> enderecoSubscriber = consultarPorCep("71720-585")
-                .invoke(item -> Assertions.assertEquals(endereco, item))
+        EnderecoWrapper atual = consultarPorCep("71720585")
+                //.invoke(item -> Assertions.assertEquals(item, endereco))
+                .subscribe()
+                .withSubscriber(UniAssertSubscriber.create())
+                .awaitItem(Duration.ofSeconds(5))
+                .getItem();
+
+        Assertions.assertEquals(expectativa, atual, ()-> "Os endereços não são iguais!");
+
+    }
+
+    @Test
+    public void testDevolveEnderecoCompletoPeloCepAssinado() {
+
+        EnderecoWrapper expectativa = endereco();
+
+        UniAssertSubscriber<EnderecoWrapper> enderecoSubscriber = consultarPorCep("71720585")
+                .invoke(atual -> Assertions.assertEquals(expectativa, atual, ()-> "Os endereços não são iguais!"))
                 .subscribe()
                 .withSubscriber(UniAssertSubscriber.create());
-                //.assertCompleted();
 
         enderecoSubscriber
             .awaitItem(Duration.ofSeconds(10))
